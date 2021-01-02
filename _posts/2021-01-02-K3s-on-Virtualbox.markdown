@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Deploying of K3s cluster on Virtualbox"
+title:  "Deploying K3s cluster on Virtualbox"
 date:   2021-01-02 20:00:00 +0200
 categories: kubernetes
 tags: kubernetes virtualbox k3s vagrant
@@ -18,7 +18,7 @@ So I've started to explore what way I can build kubernetes at home and what I ne
 I've bought three raspberry pi 4's with 4GB of RAM and built my kubernetes cluster as per Jeff's instruction. 
 It worked fine but it was not good when I needed to change something on a cluster - I needed to test it first somewhere before to push to *production* and at the same time kubernetes is not the most simple thing when you just start - you break & build it from scratch many times.
 
-So this is how I've come to fact that I need test kubernetes cluster which would be similar to my *production* one (k3s on raspberries) and this post is about how to use Virtualbox as a platform for three nodes k3s cluster.
+So this is how I've come to fact that I need test kubernetes cluster which would be similar to my *production* one (k3s on raspberries) and this post is about how to use Virtualbox as a platform for k3s cluster.
 
 # Instruction
 ## Prepare 4x VMs
@@ -101,12 +101,12 @@ After all steps of ansible playbook are completed you should have three nodes ku
 Yes, it won't be ARM architecture but at least it will be very similar to everything else - three nodes with the same version of k3s and its components.
 
 ## Check deployed k3s cluster
-Login to kube1 (master) and check kubernetes deployed cluster cluster
+Login to kube1 (master) and check deployed kubernetes components:
 ```
 $ vagrant ssh kube1
-$ sudo su -
-# cp /home/vagrant/.kube/config /root/.kube/
-# kubectl get pod -A -o wide
+vagrant@kube1:~$ sudo su -
+root@kube1:~# cp /home/vagrant/.kube/config /root/.kube/
+root@kube1:~# kubectl get pod -A -o wide
 NAMESPACE     NAME                                      READY   STATUS      RESTARTS   AGE     IP           NODE    NOMINATED NODE   READINESS GATES
 kube-system   helm-install-traefik-fkf2f                0/1     Completed   0          6h21m   10.42.2.4    kube1   <none>           <none>
 kube-system   local-path-provisioner-58fb86bdfd-8ch5s   1/1     Running     1          6h21m   10.42.2.9    kube1   <none>           <none>
