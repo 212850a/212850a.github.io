@@ -6,12 +6,12 @@ categories: kubernetes
 tags: kubernetes virtualbox k3s vagrant
 ---
 
-# Overview
+## Overview
 This post contains instruction about how to deploy three nodes K3s cluster on Virtualbox for testing purposes.
 
-# Story
+## Story
 HA (high available) systems in modern IT world is *de facto* standard and I manage them for years at work. 
-However I always wanted to have my own HA cluster at home to have well structured and robust platform for my own purposes + at the same time it would be good to develop my expertise with Kubernetes, containers and IaC (infrastructure as a code). 
+However I always wanted to have my own HA cluster at home to have well structured and robust platform for my purposes + at the same time it would be good to develop my expertise with Kubernetes, containers and IaC (infrastructure as a code). 
 
 So I've started to explore what way I can build kubernetes at home and what I need for that. Don't remember how exactly, but I've discovered [Jeff Geerling's site](https://www.jeffgeerling.com), his "Raspberry Pi Cluster" series and my choice was made - k3s on raspberry pi. 
 
@@ -20,8 +20,9 @@ It worked fine but it was not good when I needed to change something on a cluste
 
 So this is how I've come to fact that I need test kubernetes cluster which would be similar to my *production* one (k3s on raspberries) and this post is about how to use Virtualbox as a platform for k3s cluster.
 
-# Instruction
-## Prepare 4x VMs
+## Instruction
+
+### Prepare 4x VMs
 With a help of [Vagrant](https://en.wikipedia.org/wiki/Vagrant_(software)) and [Virtualbox](https://en.wikipedia.org/wiki/VirtualBox) the following Vagrantfile should be created to build 4x VMs based on Debian 10
 ```
 $ cat Vagrantfile
@@ -54,7 +55,7 @@ end
 * kube1 - master node
 * kube2 & kube3 - worker nodes
 
-## Build K3s cluster with Ansible
+### Build K3s cluster with Ansible
 Install Ansible and git on kube0
 ```
 $ vagrant ssh kube0
@@ -70,11 +71,12 @@ k3s_version: v1.17.5+k3s1
 ansible_user: vagrant
 systemd_dir: /etc/systemd/system
 {% raw  %}master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
-extra_server_args: "--node-ip={{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }} --flannel-iface=eth1"{% endraw %}
+extra_server_args: "--node-ip={{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }} --flannel-iface=eth1 --no-deploy servicelb --no-deploy traefik"{% endraw %}
 extra_agent_args: "--flannel-iface=eth1"
 ```
 * ansible_user should be vagrant as it's default account which is used when you build VM with Vagrant
-* extra_server_args and extra_agent_args variables should be updated as specified otherwise eth0 (10.0.2.15) will be used on each new kube-VM and it won't work
+* extra_server_args and extra_agent_args variables should be updated with --flannel-iface=eth1 as specified otherwise eth0 (10.0.2.15) will be used on each new kube-VM and it won't work
+* If you don't plan to use included into k3s load balancer (klipper servicelb) and ingress (traefik) components marked them as --no-deploy (as on example above)
 
 ```
 $ vi k3s-ansible/inventory/hosts.ini 
@@ -123,12 +125,13 @@ kube2   Ready    <none>   6h21m   v1.17.5+k3s1   192.168.8.22   <none>        De
 kube3   Ready    <none>   6h21m   v1.17.5+k3s1   192.168.8.23   <none>        Debian GNU/Linux 10 (buster)   4.19.0-6-amd64   containerd://1.3.3-k3s2
 ```
 
-# Useful
+## Useful
 If you want to destroy your test k3s cluster just run the following from kube0
 ```
 $ ansible-playbook reset.yml -i inventory/hosts.ini
 ```
 
-# Links
+
+## Links
 * [Raspberry Pi Cluster Episode 3 - Installing K3s Kubernetes on the Turing Pi](https://www.jeffgeerling.com/blog/2020/installing-k3s-kubernetes-on-turing-pi-raspberry-pi-cluster-episode-3)
 * [Raspberry Pi Cluster Episode 4 - Minecraft, Pi-hole, Grafana and More!](https://www.jeffgeerling.com/blog/2020/raspberry-pi-cluster-episode-4-minecraft-pi-hole-grafana-and-more)
