@@ -3,7 +3,6 @@ layout: post
 title:  "AWS Glacier Deep Archive as off-site backup solution"
 date:   2020-12-20 17:41:29 +0200
 published: true
-categories: aws backup
 tags: aws backup archive duplicity glacier
 ---
 

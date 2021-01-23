@@ -2,7 +2,6 @@
 layout: post
 title:  "Deploying K3s cluster on Virtualbox"
 date:   2021-01-02 20:00:00 +0200
-categories: kubernetes
 tags: kubernetes virtualbox k3s vagrant
 ---
 
