@@ -1,0 +1,9 @@
+---
+layout: post
+title: "Plex on K3s"
+date: 2022-02-07 10:00:00 +0200
+tags: plex media
+---
+# Overview
+Historically I used kodi, LibreELEC, OpenELEC for several year on different media boxes and several years ago when Docker became polular I've discovered that Plex can be run as Docker container so I've switched to it. Then my journey with Kubernetes has started and natural movement was to move Plex inside Kubernetes.
+
