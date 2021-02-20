@@ -11,7 +11,7 @@ Not once practice demonstrated to me that if there are some historical statistic
 
 The most frequently used monitoring system for Kubernetes (and not only for it) these days is Prometheus which is built as cloud native application from the beginning. It can query metrics on remote targets, store collected metric in time series database and even visualize them in web GUI. However very often Prometheus is used in linked with Grafana which is another monitoring tool but it has much more powerful UI for visualizing graphs from collected metrics. When Prometheus is used together with Grafana, Prometheus queries metrics and store them in its database, Grafana is used as UI for graphs only.
 
-![Prometheus architecture](/blog/assets/prometheus_architecture.png)
+![Prometheus architecture](/assets/prometheus_architecture.png)
 
 As Prometheus is cloud native native application it contains several independent components which should be installed correctly whole monitoring system to work correctly. It's not trivial task if you just start exploring Kubernetes, so this is why for the beginning I recommend to install it with Helm, package manager for Kubernetes.
 

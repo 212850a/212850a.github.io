@@ -82,7 +82,7 @@ level=info ts=2021-01-17T07:48:56.731168145Z caller=reloader.go:347 msg="Reload 
 ```
 
 Then it will be possible to make graphs for snmp-metrics in Grafana:
-![snmp-exporter data in Grafana](/blog/assets/snmp-exporter-grafana.png)
+![snmp-exporter data in Grafana](/assets/snmp-exporter-grafana.png)
 
 # arm-exporter
 I built erm-exporter yaml-files from [Carlos Eduardo's Cluster Monitoring Repo](https://github.com/carlosedp/cluster-monitoring) with make and then update armexporter-serviceMonitor.yaml as per the following (to add `release: prometheus` to labels):
@@ -140,8 +140,8 @@ arm-exporter-mgvq4                                        2/2     Running   2   
 arm-exporter-rmmc8                                        2/2     Running   2          27d
 ```
 After few minutes prometheus will see new exporter and they should be available as targets - one target per each Kubernetes node:
-![arm-exporter targets in Prometheus](/blog/assets/arm-exporter-prometheus.png)
+![arm-exporter targets in Prometheus](/assets/arm-exporter-prometheus.png)
 Next step is to create graph in Grafana:
-![arm-exporter data in Grafana](/blog/assets/arm-exporter-grafana.png)
+![arm-exporter data in Grafana](/assets/arm-exporter-grafana.png)
 
 
