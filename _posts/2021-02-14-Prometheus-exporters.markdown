@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Prometheus exporters"
+title:  "Prometheus Exporters"
 date:   2021-02-14 10:00:00 +0200
 tags: prometheus exporter snmp arm
 ---
