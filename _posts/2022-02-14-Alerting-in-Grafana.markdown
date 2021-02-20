@@ -3,6 +3,7 @@ layout: post
 title:  "Alerting in Grafana to Telegram"
 date:   2022-02-14 10:00:00 +0200
 tags: k3s alerting monitoring
+published: false
 ---
 # Overview
 After you have working monitoring solution based on Prometheus/Grafana the next step is to get alerts for cases which you want to be informed.
