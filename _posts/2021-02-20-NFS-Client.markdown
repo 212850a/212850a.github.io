@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "NFS-Client as Storageclass in K3s"
+title: "NFS Subdirectory External Provisioner as Storageclass in K3s"
 date: 2021-02-20 10:00:00 +0200
 tags: k3s storage nfs
 published: true
@@ -28,28 +28,23 @@ Before to install nfs-client into kubernetes cluster your NFS server has to be c
  
 The easiest way to install nfs-client is to use helm and create storage namespace for it before:
 ```
-helm repo add stable https://charts.helm.sh/stable
-helm search repo | grep nfs-client
-stable/nfs-client-provisioner                     	1.2.11       	3.1.0                  	DEPRECATED - nfs-client is an automatic provisi...
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+helm search repo | grep nfs-subdir
+nfs-subdir-external-provisioner/nfs-subdir-exte...	4.0.4        	4.0.0                  	nfs-subdir-external-provisioner is an automatic...
 
 kubectl create namespace storage
 
-helm install -n storage --set nfs.server=192.168.8.20 --set nfs.path=/mnt/kubcluster storage stable/nfs-client-provisioner
-```
-
-If it is run on raspberry pi (arm processor architecture) different image should be used for container:
-```
-helm install -n storage --set nfs.server=192.168.8.20 --set nfs.path=/mnt/kubcluster --set image.repository=quay.io/external_storage/nfs-client-provisioner-arm storage stable/nfs-client-provisioner
+helm install -n storage --set nfs.server=192.168.8.20 --set nfs.path=/mnt/kubcluster storage nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
 ```
 As result you should see new storageclass available and pod running:
 ```
 # kubectl get pod -n storage
-NAME                                              READY   STATUS    RESTARTS   AGE
-storage-nfs-client-provisioner-69c4fb6fd4-xfczb   1/1     Running   0          27d
+NAME                                                     READY   STATUS    RESTARTS   AGE
+storage-nfs-subdir-external-provisioner-dd4dbdf5-5rmrw   1/1     Running   0          9m57s
 # kubectl get storageclass
-NAME                   PROVISIONER                                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-local-path (default)   rancher.io/local-path                          Delete          WaitForFirstConsumer   false                  33d
-nfs-client             cluster.local/storage-nfs-client-provisioner   Delete          Immediate              true                   27d
+NAME                   PROVISIONER                                             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-path (default)   rancher.io/local-path                                   Delete          WaitForFirstConsumer   false                  6d17h
+nfs-client             cluster.local/storage-nfs-subdir-external-provisioner   Delete          Immediate              true                   10m
 ```
 
 # Usage
