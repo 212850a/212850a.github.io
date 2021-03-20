@@ -81,7 +81,7 @@ cat pihole-values.yaml
 ---
 persistentVolumeClaim:
   enabled: true
-  existingClaim: "pihole-pvc"
+  existingClaim: "pihole-nfs-pvc"
 serviceWeb:
   type: LoadBalancer
   annotations:
