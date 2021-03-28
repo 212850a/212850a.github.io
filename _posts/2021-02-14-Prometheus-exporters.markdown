@@ -85,7 +85,7 @@ Then it will be possible to make graphs for snmp-metrics in Grafana:
 ![snmp-exporter data in Grafana](/assets/snmp-exporter-grafana.png)
 
 # arm-exporter
-I built erm-exporter yaml-files from [Carlos Eduardo's Cluster Monitoring Repo](https://github.com/carlosedp/cluster-monitoring) with make and then update armexporter-serviceMonitor.yaml as per the following (to add `release: prometheus` to labels):
+I built arm-exporter yaml-files from [Carlos Eduardo's Cluster Monitoring Repo](https://github.com/carlosedp/cluster-monitoring) with make and then update armexporter-serviceMonitor.yaml as per the following (to add `release: prometheus` to labels):
 ```
 cat armexporter-serviceMonitor.yaml
 apiVersion: monitoring.coreos.com/v1
