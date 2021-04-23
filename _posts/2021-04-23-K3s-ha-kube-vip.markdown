@@ -51,7 +51,7 @@ Start provisioning of the cluster using the following command:
 ```
 ansible-playbook site.yml -i inventory/hosts.ini
 ```
-After cluster is built and ansible playbook is completed to get access there just copy /etc/rancher/k3s/k3s.yaml to your ~/.kube/config.
+After cluster is built and ansible playbook is completed to get access there just copy /etc/rancher/k3s/k3s.yaml to your ~/.kube/config, just don't forget to update server address from https://127.0.0.1:6443 to http://apiserver_endpoint_ip:6443.
 ```
 % kubectl get nodes
 NAME    STATUS   ROLES         AGE     VERSION
