@@ -6,7 +6,7 @@ tags: plex media k3s
 published: true
 ---
 ## Preface
-Historically I used xbmc/kodi, LibreELEC, OpenELEC for several year on different media boxes, then several years ago (when Docker became popular) I've discovered that Plex can be run as container so I've switched to it. Then my journey with Kubernetes has started and natural movement was to move Plex inside Kubernetes cluster.
+Historically I used xbmc/kodi, LibreELEC, OpenELEC for years on different media boxes, then several years ago (when Docker became popular) I've discovered that Plex can be run as container so I've switched to it. Then my journey with Kubernetes has started and natural movement was to move Plex inside Kubernetes cluster.
 
 ## Important moments
 To run Plex as container the following things should be addressed:
