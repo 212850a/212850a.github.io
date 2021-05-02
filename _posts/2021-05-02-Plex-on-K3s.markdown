@@ -1,0 +1,171 @@
+---
+layout: post
+title: "Plex deployment on K3s"
+date: 2021-05-02 09:00:00 +0200
+tags: plex media k3s
+published: true
+---
+## Preface
+Historically I used xbmc/kodi, LibreELEC, OpenELEC for several year on different media boxes, then several years ago (when Docker became popular) I've discovered that Plex can be run as container so I've switched to it. Then my journey with Kubernetes has started and natural movement was to move Plex inside Kubernetes cluster.
+
+## Important moments
+To run Plex as container the following things should be addressed:
+- you have to have at least free Plex account to generate plex_claim. It is used to view and manage apps, servers, and other tools that are linked to it. 
+- media data (movies, tv shows, music, pictures and so on) should be accessible for Plex container as folder from local file system
+- Plex configuration/library data should be stored on persistent volume to have ability to make backups and possible migrations in future
+- default network port for Plex is 32400, but it can be exposed as any other (tcp/80) for instance. There are more ports which can be configured but it depends on specific functionality which you plan to switch on Plex.
+- it’s better to have Plex running on its own ip-address (with a help of LoadBalancer) in that case it will be easier to make it discoverable on local network (for AppleTV Plex client for instance)
+
+## Prerequisites for Plex in K3s
+- PLEX_CLAIM - the claim token for the server to obtain a real server token. If not provided, server will not be automatically logged in. If server is already logged in, this parameter is ignored. You can obtain a claim token to login your server to your Plex account by visiting https://www.plex.tv/claim
+- media data as local directory should be mounted on all k3s-nodes
+- [metallb](/2021/01/15/Metallb-as-LoadBalancer-for-K3s.html) as LoadBalancer should be ready to provide ip-address for plex
+- [nfs-subdir-external-provisioner](/2021/02/20/NFS-Client.html) should be installed and configured as Plex config/library will be stored on nfs persistent volume
+
+## Installation
+- Media data
+Make sure that media data folder is added into /etc/fstab on each k3s node and mounted as local folder (in example below /mnt/data is used for that)
+
+- Create namespace
+```
+kubectl create namespace plex
+```
+
+- Create persistent volume for Plex Media (data)
+
+```
+cat > plex-data-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata: 
+  name: plex-data-pv
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadOnlyMany
+  hostPath:
+    path: /mnt/data
+
+kubectl apply -f plex-data-pv.yaml
+```
+
+- Create persistent volume claim for Plex Media (data)
+
+```
+cat > plex-data-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: plex
+  name: plex-data-pvc
+spec:
+  accessModes:
+    - ReadOnlyMany
+  volumeName: plex-data-pv
+  resources:
+    requests:
+      storage: 1Ti
+  storageClassName: ""
+```
+
+- Create persistent volume claim for Plex Library (config)
+
+```
+cat > plex-config-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: "plex"
+  name: "plex-config-pvc"
+  annotations:
+    volume.beta.kubernetes.io/storage-class: nfs-client
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: "10Gi"
+```
+
+- Add k8s-at-home helm repo
+
+```
+helm repo add k8s-at-home https://k8s-at-home.com/charts/
+```
+
+- Prepare values-file 
+Go to https://www.plex.tv/claim to get generated PLEX_CLAIM and then prepare values-file.
+
+```
+ cat > plex-values.yaml
+ image:
+  repository: linuxserver/plex
+  tag: latest
+  pullPolicy: IfNotPresent
+
+env:
+  PLEX_CLAIM: "claim-ne3xhadLMsxRpy4567890"
+  TZ: "Europe/Vilnius"
+
+service:
+  type: LoadBalancer
+  annotations:
+    # if multiple ports are used, all of them will be used on one ip-address that to that
+    metallb.universe.tf/allow-shared-ip: plex-svc
+  port:
+    port: 80
+    targetPort: 32400
+
+persistence:
+  data:
+    enabled: true
+    existingClaim: "plex-data-pvc"
+  config:
+    enabled: true
+    existingClaim: "plex-config-pvc"
+
+# Enable devices to be discoverable
+hostNetwork: true
+
+resources: {}
+podAnnotations: {}
+proxy:
+  enable: false
+```
+
+- Install Plex helm chart based on values-file
+
+```
+helm install plex --values plex-values.yml -n plex k8s-at-home/plex
+```
+
+## How to migrate Plex Library
+If you had Plex Library before and want to migrate it to new new cluster/container, just install new Plex, wait until it's started and then stop it
+
+```
+kubectl scale --replicas=0 deployment/plex -n plex
+deployment.apps/plex scaled
+```
+
+Check what user:group is used for Library in new container (use it in next step)
+```
+ls -l /mnt/kubcluster/plex-plex-config-pvc-pvc-53abef0c-2b2d-461d-9a81-eb64034ac111/
+total 12
+drwxr-xr-x 4 911 911 4096 Jan 17 20:28 Library
+```
+
+Replace new Library by old one and change ownership recursively there
+
+```
+rm -rf /mnt/kubcluster/plex-plex-config-pvc-pvc-53abef0c-2b2d-461d-9a81-eb64034ac111/Library
+mv /mnt/kubcluster/old-plex/Library /mnt/kubcluster/plex-plex-config-pvc-pvc-53abef0c-2b2d-461d-9a81-eb64034ac111/
+cd /mnt/kubcluster/plex-plex-config-pvc-pvc-53abef0c-2b2d-461d-9a81-eb64034ac111
+chown -R 911:911 Library
+```
+Start Plex container back
+
+```
+kubectl scale --replicas=1 deployment/plex -n plex
+deployment.apps/plex scaled
+```
