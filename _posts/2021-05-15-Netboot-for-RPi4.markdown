@@ -5,7 +5,6 @@ date: 2021-05-15 09:00:00 +0200
 tags: pxe netboot raspberrypi rpi
 published: true
 ---
-
 ## Preface
 I started to think about netboot (pxe booting) for raspberry pi 4 some time ago. For the beginning it was just due to curiosity, but when I switched my k3s cluster to [HA mode](/2021/04/23/K3s-ha-kube-vip.html) and saw how much utilized disks on master nodes I've come to decision to test it for my cluster. 
 
