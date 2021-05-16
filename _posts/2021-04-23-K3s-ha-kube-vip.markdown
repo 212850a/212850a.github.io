@@ -44,8 +44,8 @@ systemd_dir: /etc/systemd/system
 flannel_iface: "eth1"
 apiserver_endpoint: "192.16.35.100"
 k3s_token: "mysupersecuretoken"
-{% raw  %}extra_server_args: "--node-ip={{ ansible_eth1.ipv4.address }} --flannel-iface={{ flannel_iface }} --no-deploy servicelb --no-deploy traefik"
-extra_agent_args: "--flannel-iface={{ flannel_iface }}"{% endraw %}
+extra_server_args: "--node-ip={{ ansible_eth1.ipv4.address }} --flannel-iface={{ flannel_iface }} --no-deploy servicelb --no-deploy traefik"
+extra_agent_args: "--flannel-iface={{ flannel_iface }}"
 ```
 apiserver_endpoint is virtual ip-addresses, which will be created with a help of kube-vip component on each master node.
 
