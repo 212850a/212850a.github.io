@@ -201,4 +201,3 @@ extra_agent_args: "--flannel-iface={{ flannel_iface }} --snapshotter=native"{% e
 * [Network boot your Raspberry Pi](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/net_tutorial.md)
 * [PXE Booting Raspberry Pi 4 with Synology and Ubiquiti EdgeRouter](https://www.definit.co.uk/2020/03/pxe-booting-raspberry-pi-4-with-synology-and-ubiquiti-edgerouter/)
 * [K3S NFS Root howto](http://chegwin.org/posts/k3s_raspi_nfs_mount/)
-
