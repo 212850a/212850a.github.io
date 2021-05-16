@@ -15,6 +15,9 @@ In addition to having [control plane](https://kubernetes.io/docs/concepts/overvi
 
 As with single master mode I used [k3s/k3s-ansible](https://github.com/k3s-io/k3s-ansible/tree/k3s-ha) repository, k3s-ha branch as base for start. But due I planned to used it with conjunction of kube-vip I've forked repository and published all my work as separate branch [k3s-ha-kube-vip](https://github.com/212850a/k3s-ansible/tree/k3s-ha-kube-vip) to my local repository.
 
+## Important moments
+* Disk utilization on master nodes will significantly increase due to running etcd (it will be around 100Kb/s). From my experience using microSD as disk for K3s RPi HA-cluster won't work without problems. Only real high speed microSD's will cope with load, however it's not recommended to use them as they eventually will fail due to limited number of read/write cycles. Disk drives or [netboot](/2021/05/15/Netboot-for-RPi4.html) have to be used instead.
+
 ## Prerequisites
 ### Create inventory file
 Based on example from inventory/sample create file with your servers (inventory/hosts.ini as example):
@@ -41,8 +44,8 @@ systemd_dir: /etc/systemd/system
 flannel_iface: "eth1"
 apiserver_endpoint: "192.16.35.100"
 k3s_token: "mysupersecuretoken"
-extra_server_args: "--node-ip={{ ansible_eth1.ipv4.address }} --flannel-iface={{ flannel_iface }} --no-deploy servicelb --no-deploy traefik"
-extra_agent_args: "--flannel-iface={{ flannel_iface }}"
+{% raw  %}extra_server_args: "--node-ip={{ ansible_eth1.ipv4.address }} --flannel-iface={{ flannel_iface }} --no-deploy servicelb --no-deploy traefik"
+extra_agent_args: "--flannel-iface={{ flannel_iface }}"{% endraw %}
 ```
 apiserver_endpoint is virtual ip-addresses, which will be created with a help of kube-vip component on each master node.
 
@@ -66,6 +69,3 @@ To destroy cluster and remove k3s software from servers:
 ```
 ansible-playbook reset.yml -i inventory/hosts.ini
 ```
-
-
-
