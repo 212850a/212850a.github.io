@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Netboot for Raspberry Pi"
+title: "Netboot for Raspberry Pi with /boot and root (/) on NFS"
 date: 2021-05-15 09:00:00 +0200
-tags: pxe netboot raspberrypi rpi
+tags: pxe netboot raspberrypi rpi nfs
 published: true
 ---
 ## Preface
@@ -14,7 +14,7 @@ This post is almost identical copy of that guide with few important moments whic
 ## Plan
 - Configure the DHCP service on your router
 - Configure the NFS and TFTP services on your NAS
-- Configure Raspberry Pi Boot
+- Configure Raspberry Pi to store /boot and / (root) on NFS server 
 
 ## DHCP service
 In order for the Raspberry Pi to know where to boot from, *tftp-server-name* option should be added into DHCP service. If Ubiquity router is used and 192.168.8.99 is ip-address of NFS/TFTP-service then it will look like:
@@ -181,7 +181,7 @@ configfs on /sys/kernel/config type configfs (rw,relatime)
 192.168.8.99:/volume1/rpi-tftpboot/47102626 on /boot type nfs (rw,relatime,vers=3,rsize=131072,wsize=131072,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=192.168.8.99,mountvers=3,mountport=892,mountproto=tcp,local_lock=none,addr=192.168.8.99)
 ```
 
-## K3s on RPi with netboot
+## K3s on RPi with root and /boot on NFS
 There is important moment which you need to remember - if you plan to run K3s on RPi with netboot - overlayfs which is used as default for containerd does not support NFS, as result K3s has to be started with '--snapshotter=native' option.
 Example for inventory/group_vars/all.yml file from [K3s in HA mode with kube-vip](/2021/04/23/K3s-ha-kube-vip.html)
 ```
