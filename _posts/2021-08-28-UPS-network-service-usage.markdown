@@ -9,8 +9,8 @@ published: true
 It's quite risky to lose main power for Kubernetes cluster and it's even more risky if all drives on nodes are provided via [iSCSI](/2021/06/13/Diskless-RPi-over-iSCSI.html). In my setup UPS is connected to Synology NAS via USB cable, so Synology NAS knows when something is wrong with main power and can shutdown itself gracefully, however what to do with RPi cluster which is running on iSCSI volumes? Answer is simple - Network UPS Tools (NUT).
 
 ## Server side
-Synology NAS has ability to enable UPS server (to work as master), in addition to that all RPi nodes should be specifiedin "Permitted DiskStation devices".
-![psynology-ups](/assets/synology-ups.png)
+Synology NAS has ability to enable UPS server (to work as master), in addition to that all RPi nodes should be specified in "Permitted DiskStation devices".
+![synology-ups](/assets/synology-ups.png)
 
 ## Client side
 On all RPi's NUT packet has to be installed and configured in client mode (slave mode).
