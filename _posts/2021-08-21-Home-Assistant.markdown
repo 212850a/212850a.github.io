@@ -222,7 +222,16 @@ binary_sensor:
 ```
 
 ### TP-Link KP105 Smart Plug
-[TP-Link KP105](https://www.tp-link.com/uk/home-networking/smart-plug/kp105/) smart plugs can be added directly to Home Assistant via Integrations section after they are configured with Kasa mobile application and connected to Wifi. Once they are added you can manage power plugs remotely - via Home Assistant client (for instance from mobile phone).
+[TP-Link KP105](https://www.tp-link.com/uk/home-networking/smart-plug/kp105/) smart plugs should be configured with Kasa mobile application and connected to Wifi first. Then the main Home Assistant configuration file (configuration.yaml) should be updated with details about tplink devices:
+```
+tplink:
+  discovery: false
+  switch:
+    - host: 192.168.8.121
+    - host: 192.168.8.122
+```  
+After main configuration file is updated Home Assistant should be restarted and then tplink plugs can be added to Home Assistant via Integrations section. Once they are added power plugs can be managed remotely - via Home Assistant client (for instance from mobile phone).
+
 
 ### Shelly 3EM/EM
 [Shelly 3EM](https://shelly.cloud/products/shelly-3em-smart-home-automation-energy-meter/) power meters can be added directly to Home Assistant via Integrations section after they are configured and connected to Wifi. 
