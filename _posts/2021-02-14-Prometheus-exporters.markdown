@@ -7,9 +7,10 @@ tags: prometheus exporter snmp arm
 # Overview
 It is possible to add to Prometheus modules (exporters) which would collect metrics from external objects via non-prometheus protocols (snmp as example) and then to provide them to Prometheus as usual targets.
 
-Today I'm using two exporters:
+Today I'm using the following exporters:
 * __snmp-exporter__ - to get network statistics from my network devices
 * __arm-exporter__ - to get cpu temperature of raspberry pi cpu
+* __blackbox-exporter__ - to check the availability of HTTP/S, DNS, TCP and ICMP endpoints
 
 This is how I installed & configure them in my k3s cluster.
 
@@ -145,3 +146,62 @@ Next step is to create graph in Grafana:
 ![arm-exporter data in Grafana](/assets/arm-exporter-grafana.png)
 
 
+# blackbox-exporter
+It's also officially supported exporter so it can be installed from [prometheus-community](https://prometheus-community.github.io/helm-charts/) helm repository. 
+This is how my minimal configuration for blackbox-exporter looks like, where 192.168.1.1 is my router and 78.60.180.254 is my provider's router:
+```
+cat > snmp-exporter-minimal-values.yml
+podSecurityContext:
+  sysctls:
+  - name: net.ipv4.ping_group_range
+    value: "0 65536"
+config:
+  modules:
+    icmp:
+      prober: icmp
+      icmp:
+        preferred_ip_protocol: "ip4"
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  defaults:
+    labels:
+      release: prometheus
+    interval: 30s
+    scrapeTimeout: 30s
+  targets:
+    - name: router
+      module: icmp
+      url: 192.168.1.1
+    - name: providerrouter
+      module: icmp
+      url: 78.60.180.254
+    - name: google
+      module: icmp
+      url: 8.8.8.8
+    - name: amazon.de
+      url: https://www.amazon.de
+```
+After installation can be initiated as per command:
+```
+helm install blackbox-exporter prometheus-community/prometheus-blackbox-exporter --values prometheus-blackbox-exporter-values.yml --namespace monitoring
+```
+The following components should be available in kubernetes cluster after installation from helm:
+```
+# kubectl get servicemonitor -n monitoring | grep blackbox
+blackbox-exporter-prometheus-blackbox-exporter-router              3d21h
+blackbox-exporter-prometheus-blackbox-exporter-providerrouter      3d21h
+blackbox-exporter-prometheus-blackbox-exporter-google              3d17h
+blackbox-exporter-prometheus-blackbox-exporter-amazon.de           3d17h
+
+# kubectl get svc -n monitoring | grep blackbox
+blackbox-exporter-prometheus-blackbox-exporter   ClusterIP      10.43.53.171    <none>         9115/TCP       3d21h
+
+# helm list -n monitoring
+NAME              NAMESPACE   REVISION  UPDATED                                   STATUS    CHART                               APP VERSION
+blackbox-exporter monitoring  7         2023-09-23 10:01:28.040944704 +0300 EEST  deployed  prometheus-blackbox-exporter-8.2.0  v0.24.0
+prometheus        monitoring  1         2022-05-28 23:04:37.940504277 +0300 EEST  deployed  kube-prometheus-stack-16.7.0        0.48.1
+snmp-exporter     monitoring  6         2023-09-22 17:15:51.547035207 +0300 EEST  deployed  prometheus-snmp-exporter-1.1.0      0.19.0
+```
+Next step is to create graph in Grafana:
+![blackbox-exporter data in Grafana](/assets/blackbox-exporter-ping.png)
