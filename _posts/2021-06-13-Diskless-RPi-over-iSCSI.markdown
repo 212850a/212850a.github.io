@@ -118,6 +118,10 @@ cat /mnt/boot/47102626/cmdline.txt
 console=serial0,115200 console=tty1 ip=dhcp root=UUID=de208c76-4d29-467f-b6c5-4d7c9f0e0827 ISCSI_USERNAME=rpi1 ISCSI_PASSWORD=mysupersecurepassword ISCSI_INITIATOR=iqn.1993-08.org.debian:01:d52b48145cc ISCSI_TARGET_NAME=iqn.2000-01.com.synology:storage.rpi1.ebab984136 ISCSI_TARGET_IP=192.168.8.99 ISCSI_TARGET_PORT=3260 rw rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory
 ```
 
+## RPi 5
+On RPi 5 (Raspbian OS 12 bookworm) cmdline.txt and config.txt are in /boot/firmware. 
+Generated initrd-file has to be copied to /boot/firmware either.
+
 ## Copy / to iSCSI disk
 Last step is to copy all data from current / to iscsi disk which is still mounted as /mnt/iscsi
 ```
