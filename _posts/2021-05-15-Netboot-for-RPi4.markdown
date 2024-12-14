@@ -143,8 +143,31 @@ sudo cp -r /boot/* /mnt/47102626
 ```
 Next edit the cmdline.txt file in the new TFTP boot directory and replace the root partition with the NFS partition (folder where data was copied with rsync before).
 ```
-sudo vim /mnt/kubcluster/47102626/cmdline.txt
+sudo vim /mnt/47102626/cmdline.txt
 console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.8.99:/volume1/rpi-pxe/p1,vers=3 rw ip=dhcp elevator=deadline rootwait cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory
+```
+
+### RPi 5
+On RPi 5 (Raspbian OS 12 bookworm) to confirm serial number of RPi:
+
+```
+# cat /proc/cpuinfo | grep Serial | awk -F ': ' '{print $2}' | tail -c 9
+92003445
+```
+
+cmdline.txt with all required files are moved under /boot/firmware, so only content of /boot/firmware has to be copied to rpi-tftpboot.
+
+```
+sudo mount 192.168.8.99:/volume1/rpi-tftpboot /mnt
+sudo mkdir /mnt/92003445
+sudo cp -r /boot/firmware/* /mnt/92003445
+```
+/etc/fstab file has to be like:
+```
+sudo mount 192.168.8.99:/volume1/rpi-pxe /mnt
+cat /mnt/p1/etc/fstab
+proc            /proc           proc    defaults          0       0
+192.168.8.99:/volume1/rpi-tftpboot/92003445 /boot/firmware nfs defaults,vers=3,proto=tcp 0 0
 ```
 
 ### Boot RPi from network
