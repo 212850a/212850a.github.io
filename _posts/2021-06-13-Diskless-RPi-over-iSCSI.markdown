@@ -122,6 +122,18 @@ console=serial0,115200 console=tty1 ip=dhcp root=UUID=de208c76-4d29-467f-b6c5-4d
 On RPi 5 (Raspbian OS 12 bookworm) cmdline.txt and config.txt are in /boot/firmware. 
 Generated initrd-file has to be copied to /boot/firmware either.
 
+If during generating of initrd the following error is returned it can be solved by editing /etc/initramfs-tools/initramfs.conf file by changing MODULES oarameter from `dep` to `most`:
+```
+mkinitramfs: failed to determine device for /
+mkinitramfs: workaround is MODULES=most
+
+grep -r MODULES /etc/initramfs-tools
+/etc/initramfs-tools/initramfs.conf:# MODULES: [ most | netboot | dep | list ]
+/etc/initramfs-tools/initramfs.conf:MODULES=most
+/etc/initramfs-tools/initramfs.conf:#MODULES=dep
+```
+
+
 ## Copy / to iSCSI disk
 Last step is to copy all data from current / to iscsi disk which is still mounted as /mnt/iscsi
 ```
