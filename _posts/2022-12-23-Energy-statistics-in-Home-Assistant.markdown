@@ -132,13 +132,13 @@ sensor:
 
 ## Solar production statistics
 Additional energy statistics comes if you have solar production which you have access to.
-For instance with a help of [huawei_solar](https://github.com/wlcrs/huawei_solar) it’s possible to connect integration to Huawei SUN2000 inverter and get statistics about how much energy is generated on each phase, what is power and current.
+For instance with a help of [huawei_solar](https://github.com/wlcrs/huawei_solar) it’s possible to connect integration to Huawei SUN2000 inverter and get statistics about how much energy is generated on each phase, what is power and current. 
 
 Before connecting Home Assistant to Huawei inverter ensure it's connected to your network and ModBus-TCP setting is set to Connection: Enable (unrestricted) - it would allow to connect to inverter for devices of your network.
 ![modbus-tcp](/assets/modbus-tcp.png)
 
 By default Home Asistant doesn't have huawer_solar intergation so it has to be intalled manually:
-* Download [huawei_solar](https://github.com/wlcrs/huawei_solar/releases/tag/1.1.0) to custom_components/huawei_solar folder
+* Download [huawei_solar](https://github.com/wlcrs/huawei_solar) to custom_components/huawei_solar folder
 * Restart HA
 * Go to Configuration -> Integrations and click the + Add Integration. Select Huawei Solar from the list
 * Specify details for your Huawei inverter:
@@ -148,6 +148,10 @@ address: INVERTER_IP
 port: 502
 slave id: 1
 ```
+
+It is worth to mention that ModBus connectivity has limitation - only one client can be connected to inverter, so it won't be possible to use [huawei_solar](https://github.com/wlcrs/huawei_solar) integration if you need multiple connections to inverter from different devices. Alternative is [fusion_solar](https://github.com/tijsverkoyen/HomeAssistant-FusionSolar) integration which connects to [Huawei FusionSolar](https://eu5.fusionsolar.huawei.com) servers instead. Before to start using this integrartion [Northbound API Account](https://forum.huawei.com/enterprise/en/smart-pv-encyclopedia-how-to-create-a-northbound-api-account-through-the-fusionsolar/thread/1025182-100027) has to be created via FusionSolar portal:
+
+System -> Company Management -> Northbound Management -> Add.
 
 After you have energy usage and solar generation stats you can populate Energy Dashboard which is great in Home Assistant. 
 
